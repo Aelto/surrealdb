@@ -1172,8 +1172,15 @@ impl Value {
 		match self {
 			Value::None => other.is_none(),
 			Value::Null => other.is_null(),
-			Value::True => other.is_true(),
-			Value::False => other.is_false(),
+			Value::Bool(v) => match other {
+				Value::Bool(w) => v == w,
+				_ => false,
+			},
+			Value::Uuid(v) => match other {
+				Value::Uuid(w) => v == w,
+				Value::Regex(w) => w.regex().is_match(v.to_raw().as_str()),
+				_ => false,
+			},
 			Value::Thing(v) => match other {
 				Value::Thing(w) => v == w,
 				Value::Regex(w) => match w.regex() {
